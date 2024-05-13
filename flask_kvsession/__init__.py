@@ -152,6 +152,8 @@ class KVSessionInterface(SessionInterface):
                         raise KeyError
 
                     # retrieve from store
+                    if type(sid_s) == bytes:
+                        sid_s = sid_s.decode("utf-8")
                     s = self.session_class(self.serialization_method.loads(
                         current_app.kvsession_store.get(sid_s)))
                     s.sid_s = sid_s
@@ -193,6 +195,9 @@ class KVSessionInterface(SessionInterface):
             # save sid_s in cookie
             cookie_data = Signer(app.secret_key).sign(
                 session.sid_s.encode('ascii'))
+
+            if type(cookie_data) == bytes:
+                cookie_data = cookie_data.decode("utf-8")
 
             response.set_cookie(key=app.config['SESSION_COOKIE_NAME'],
                                 value=cookie_data,
